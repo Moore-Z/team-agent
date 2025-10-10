@@ -1,0 +1,27 @@
+# openai # "openai/langchain-openai: To use GPT models.
+langchain # langchain: The core framework for connecting all the pieces.
+langchain-openai
+# chromadb # chromadb: A super simple vector database that runs locally. No server needed.
+tiktoken # tiktoken: A tokenizer used by OpenAI.
+python-dotenv # python-dotenv: To load your API key from the .env file.
+rich # rich: To make the output in your terminal look beautiful (like printing Markdown)."
+langchain-community
+
+
+# requirements.txt
+fastapi==0.104.1
+uvicorn==0.24.0
+langchain==0.1.0
+chromadb==0.4.18
+openai==1.6.0
+anthropic==0.8.0
+confluent-kafka==2.3.0
+slack-sdk==3.26.0
+atlassian-python-api==3.41.0
+pydantic==2.5.0
+python-dotenv==1.0.0
+redis==5.0.1
+celery==5.3.4
+pytest==7.4.3
+
+
