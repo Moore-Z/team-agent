@@ -35,7 +35,8 @@ class QAAgent:
     def _init_qa_chain(self):
         prompt_template = """You are a helpful assistant for a software development team. 
         Use the following context to answer the question. If you don't know the answer, 
-        just say you don't know. Always mention the source of your information.
+        just say you don't know. Always mention the source of your information. Make sure 
+        the answer is less than 150 words. 
         
         Context: {context}
         Question: {question}

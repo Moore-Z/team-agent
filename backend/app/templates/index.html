@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team Knowledge Agent</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="header">
+        <h1>🤖 Team Knowledge Agent</h1>
+    </div>
+
+    <div class="chat-container">
+        <div class="messages" id="messages">
+            <div class="welcome">
+                <h2>Welcome!</h2>
+                <p>Ask me anything about your team's knowledge base.</p>
+                <p>Type your question below to get started.</p>
+            </div>
+        </div>
+
+        <div class="thinking" id="thinking">
+            <div class="spinner"></div>
+            <span>Thinking...</span>
+        </div>
+
+        <div class="input-container">
+            <form class="input-form" id="chatForm">
+                <input
+                    type="text"
+                    class="input-field"
+                    id="messageInput"
+                    placeholder="Ask a question..."
+                    autocomplete="off"
+                    required
+                >
+                <button type="submit" class="send-button" id="sendButton">Send</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="/static/chat.js"></script>
+</body>
+</html>
