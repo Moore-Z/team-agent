@@ -1,1 +1,1 @@
-# Connectors 模块初始化
+# Connectors module initialization

@@ -56,7 +56,7 @@ class QAAgent:
         )
     
     def ask(self, question: str) -> Dict:
-        """回答问题"""
+        """Answer questions"""
         result = self.qa_chain.run(question)
         return {
             "question": question,

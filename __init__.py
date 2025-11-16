@@ -1,12 +1,12 @@
-# team-agent 项目包初始化文件
+# team-agent project package initialization file
 """
 Team Agent Project
 
-这个包提供了团队代理的核心功能，包括:
-- Confluence 连接器
-- RAG (检索增强生成) 系统
-- QA 代理
-- 向量存储
+This package provides core functionality for the team agent, including:
+- Confluence connector
+- RAG (Retrieval-Augmented Generation) system
+- QA agent
+- Vector storage
 """
 
 __version__ = "1.0.0"

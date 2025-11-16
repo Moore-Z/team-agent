@@ -13,12 +13,12 @@ class ConfluenceConnector:
         )
         
     def fetch_spaces(self) -> List[Dict]:
-        """获取所有可访问的空间"""
+        """Fetch all accessible spaces"""
         spaces = self.confluence.get_all_spaces()
         return spaces['results']
     
     def fetch_pages(self, space_key: str, limit: int = 100) -> List[Dict]:
-        """获取空间中的所有页面"""
+        """Fetch all pages in a space"""
         pages = self.confluence.get_all_pages_from_space(
             space_key, 
             start=0, 
@@ -28,7 +28,7 @@ class ConfluenceConnector:
         return pages
     
     def fetch_page_by_id(self, page_id: str) -> Dict:
-        """获取指定ID的页面"""
+        """Fetch page by specified ID"""
         page = self.confluence.get_page_by_id(
             page_id,
             expand='body.storage,version,ancestors,space'
@@ -36,14 +36,14 @@ class ConfluenceConnector:
         return page
 
     def fetch_space_by_key(self, space_key: str) -> Dict:
-        """获取指定的空间信息"""
+        """Fetch specified space information"""
         space = self.confluence.get_space(space_key, expand='description,homepage')
         return space
 
     def process_page_content(self, page: Dict) -> Dict:
-        """处理页面内容，提取纯文本"""
+        """Process page content and extract plain text"""
         content = page.get('body', {}).get('storage', {}).get('value', '')
-        # 清理HTML标签
+        # Clean HTML tags
         clean_content = re.sub('<.*?>', '', content)
         
         return {

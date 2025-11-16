@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-调试环境检查工具
-用于分析调试模式和直接运行的差异
+Debug environment check tool
+Used to analyze differences between debug mode and direct execution
 """
 
 import os
@@ -9,30 +9,30 @@ import sys
 from dotenv import load_dotenv
 
 def check_environment():
-    """检查当前运行环境"""
-    print("🔍 环境检查报告")
+    """Check current runtime environment"""
+    print("🔍 Environment Check Report")
     print("=" * 50)
 
-    # 1. 工作目录
-    print(f"📁 当前工作目录: {os.getcwd()}")
+    # 1. Working directory
+    print(f"📁 Current working directory: {os.getcwd()}")
 
-    # 2. Python路径
-    print(f"\n🐍 Python可执行文件: {sys.executable}")
-    print(f"🐍 Python版本: {sys.version}")
+    # 2. Python path
+    print(f"\n🐍 Python executable: {sys.executable}")
+    print(f"🐍 Python version: {sys.version}")
 
-    # 3. 脚本位置
-    print(f"\n📄 当前脚本位置: {__file__}")
-    print(f"📄 脚本绝对路径: {os.path.abspath(__file__)}")
+    # 3. Script location
+    print(f"\n📄 Current script location: {__file__}")
+    print(f"📄 Script absolute path: {os.path.abspath(__file__)}")
 
-    # 4. sys.path 前几个路径
-    print(f"\n🛤️ Python模块搜索路径:")
+    # 4. First few sys.path entries
+    print(f"\n🛤️ Python module search paths:")
     for i, path in enumerate(sys.path[:5], 1):
         print(f"   {i}. {path}")
 
-    # 5. 环境变量检查
-    print(f"\n🔧 环境变量检查:")
+    # 5. Environment variable check
+    print(f"\n🔧 Environment variable check:")
 
-    # 检查 .env 文件位置
+    # Check .env file locations
     possible_env_files = [
         '.env',
         '../.env',
@@ -42,15 +42,15 @@ def check_environment():
 
     for env_file in possible_env_files:
         if os.path.exists(env_file):
-            print(f"   ✅ 找到 .env 文件: {os.path.abspath(env_file)}")
+            print(f"   ✅ Found .env file: {os.path.abspath(env_file)}")
             break
     else:
-        print(f"   ❌ 未找到 .env 文件")
+        print(f"   ❌ .env file not found")
 
-    # 加载环境变量
+    # Load environment variables
     load_dotenv()
 
-    # 检查关键环境变量
+    # Check key environment variables
     env_vars = {
         'CONFLUENCE_URL': os.getenv('CONFLUENCE_URL'),
         'CONFLUENCE_USERNAME': os.getenv('CONFLUENCE_USERNAME'),
@@ -60,30 +60,30 @@ def check_environment():
 
     for var_name, var_value in env_vars.items():
         if var_value:
-            # 隐藏敏感信息
+            # Hide sensitive information
             if 'TOKEN' in var_name or 'PASSWORD' in var_name:
                 display_value = f"{var_value[:4]}***{var_value[-4:]}" if len(var_value) > 8 else "***"
             else:
                 display_value = var_value
             print(f"   ✅ {var_name}: {display_value}")
         else:
-            print(f"   ❌ {var_name}: 未设置")
+            print(f"   ❌ {var_name}: Not set")
 
-    # 6. 检查调试相关环境变量
-    print(f"\n🐛 调试相关环境变量:")
+    # 6. Check debug-related environment variables
+    print(f"\n🐛 Debug-related environment variables:")
     debug_vars = ['PYTHONDEBUG', 'PYTHONPATH', 'DEBUG', 'PYCHARM_HOSTED']
     for var in debug_vars:
         value = os.getenv(var)
         if value:
             print(f"   🔍 {var}: {value}")
 
-    # 7. 检查IDE相关
+    # 7. Check IDE-related
     if 'PYCHARM_HOSTED' in os.environ:
-        print(f"\n🔧 检测到 PyCharm 调试环境")
+        print(f"\n🔧 Detected PyCharm debug environment")
     elif 'VSCODE_PID' in os.environ:
-        print(f"\n🔧 检测到 VS Code 环境")
+        print(f"\n🔧 Detected VS Code environment")
     else:
-        print(f"\n🔧 未检测到特定IDE环境")
+        print(f"\n🔧 No specific IDE environment detected")
 
 if __name__ == "__main__":
     check_environment()

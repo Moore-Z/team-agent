@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-🌐 团队知识代理 - Web版本
-基于FastAPI的Web服务器，提供类似Claude Code的聊天界面
-这个文件是整个Web应用的后端核心
+🌐 Team Knowledge Agent - Web Version
+FastAPI-based web server providing a Claude Code-like chat interface
+This file is the core backend of the entire web application
 """
 
 from fastapi import FastAPI, Request
@@ -15,26 +15,30 @@ import uvicorn
 import sys
 import os
 
-# 添加项目根目录到Python路径，这样就可以导入backend模块
-# 获取当前文件的路径，向上两级得到项目根目录
+# Add project root directory to Python path so we can import backend modules
+# Get current file path and go up two levels to get project root directory
 current_dir = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.dirname(os.path.dirname(current_dir))
 sys.path.insert(0, project_root)
 from backend.core.agents.qa_agent import QAAgent
 
-# 🏗️ 创建FastAPI应用实例
+# 🏗️ Create FastAPI application instance
 app = FastAPI(title="Team Knowledge Agent")
 
-# 🤖 初始化QA代理
-# 注意：这会在应用启动时初始化，确保Ollama服务正在运行
+# 🔗 Import and include onboarding routes
+from onboarding_routes import router as onboarding_router
+app.include_router(onboarding_router)
+
+# 🤖 Initialize QA agent
+# Note: This will be initialized at application startup, ensure Ollama service is running
 qa_agent = None
 
 @app.on_event("startup")
 async def startup_event():
-    """应用启动时初始化QA代理"""
+    """Initialize QA agent when application starts"""
     global qa_agent
     try:
-        # 初始化QA代理，使用相对于项目根目录的路径
+        # Initialize QA agent using path relative to project root directory
         chroma_path = os.path.join(project_root, "data", "chroma_db")
         qa_agent = QAAgent(chroma_db_path=chroma_path, ollama_model="qwen3:4b")
         print("✅ QA Agent initialized successfully")
@@ -42,78 +46,78 @@ async def startup_event():
         print(f"❌ Failed to initialize QA Agent: {e}")
         print("🔧 Make sure Ollama is running on http://localhost:11434")
 
-# 📁 配置静态文件服务和模板引擎
-# 这一行很重要！它告诉FastAPI为 /static/ 路径提供静态文件服务
-# 这样浏览器就可以访问 /static/chat.js, /static/styles.css 等文件
+# 📁 Configure static file service and template engine
+# This line is important! It tells FastAPI to serve static files for /static/ path
+# This way browsers can access /static/chat.js, /static/styles.css and other files
 
 app.mount("/static", StaticFiles(directory="backend/app/static"), name="static")
-# 配置Jinja2模板引擎，用于渲染HTML模板
+# Configure Jinja2 template engine for rendering HTML templates
 templates = Jinja2Templates(directory="backend/app/templates")
 
-# 📨 定义数据模型（用于API接口的数据验证）
+# 📨 Define data models (for API interface data validation)
 class ChatMessage(BaseModel):
     """
-    前端发送给后端的消息格式
-    对应 chat.js 中 JSON.stringify({ message: message }) 的结构
+    Message format sent from frontend to backend
+    Corresponds to the structure of JSON.stringify({ message: message }) in chat.js
     """
-    message: str  # 用户输入的消息内容
+    message: str  # User input message content
 
 class ChatResponse(BaseModel):
     """
-    后端返回给前端的响应格式
-    对应 chat.js 中 data.response 的结构
+    Response format returned from backend to frontend
+    Corresponds to the structure of data.response in chat.js
     """
-    response: str  # AI的回复内容
+    response: str  # AI response content
 
-# 🏠 主页路由 - 提供聊天界面
+# 🏠 Home route - provide chat interface
 @app.get("/", response_class=HTMLResponse)
 async def get_chat_interface(request: Request):
     """
-    当用户访问 http://localhost:8001/ 时触发
-    返回 index.html 模板，模板中会引用 chat.js
+    Triggered when user visits http://localhost:8001/
+    Returns index.html template, which references chat.js
     """
     return templates.TemplateResponse("index.html", {"request": request})
 
-# 💬 聊天API端点 - 处理用户消息
+# 💬 Chat API endpoint - handle user messages
 @app.post("/chat", response_model=ChatResponse)
 async def chat_endpoint(chat_message: ChatMessage):
     """
-    🔄 这是前后端交互的核心！
-    当 chat.js 发送 POST 请求到 '/chat' 时，这个函数会被调用
+    🔄 This is the core of frontend-backend interaction!
+    This function is called when chat.js sends a POST request to '/chat'
 
-    处理流程：
-    1. 接收来自 chat.js 的 JSON 数据 {"message": "用户输入的内容"}
-    2. FastAPI自动将JSON转换为ChatMessage对象
-    3. 处理消息并生成回复
-    4. 返回ChatResponse对象，FastAPI自动转换为JSON返回给前端
+    Processing flow:
+    1. Receive JSON data from chat.js {"message": "user input content"}
+    2. FastAPI automatically converts JSON to ChatMessage object
+    3. Process message and generate reply
+    4. Return ChatResponse object, FastAPI automatically converts to JSON and returns to frontend
     """
-    # 提取并清理用户消息
+    # Extract and clean user message
     message = chat_message.message.strip()
 
-    # 🤖 使用真正的QA代理处理消息
+    # 🤖 Use real QA agent to process message
     try:
         if qa_agent is None:
-            # 如果QA代理初始化失败，返回错误信息
-            response = "❌ AI服务暂时不可用。请确保Ollama服务正在运行。"
+            # If QA agent initialization failed, return error message
+            response = "❌ AI service temporarily unavailable. Please ensure Ollama service is running."
         else:
-            # 调用QA代理的ask方法
+            # Call QA agent's ask method
             result = qa_agent.ask(message)
             response = result['answer']
     except Exception as e:
-        # 处理调用过程中的错误
+        # Handle errors during the call process
         print(f"Error calling QA agent: {e}")
-        response = f"抱歉，处理您的问题时出现了错误：{str(e)}\n\n请检查：\n• Ollama服务是否运行在 http://localhost:11434\n• 向量数据库是否已正确初始化"
+        response = f"Sorry, an error occurred while processing your question: {str(e)}\n\nPlease check:\n• Is Ollama service running at http://localhost:11434\n• Is the vector database properly initialized"
 
-    # 🔙 返回格式化的响应
-    # 这个ChatResponse对象会被自动转换为JSON: {"response": "回复内容"}
-    # chat.js会接收到这个JSON并提取 data.response
+    # 🔙 Return formatted response
+    # This ChatResponse object will be automatically converted to JSON: {"response": "reply content"}
+    # chat.js will receive this JSON and extract data.response
     return ChatResponse(response=response)
 
-# 🚀 应用启动入口
+# 🚀 Application startup entry point
 if __name__ == "__main__":
     print("🚀 Starting Team Knowledge Agent Web Interface...")
     print("📱 Open your browser and go to: http://localhost:8001")
-    # 启动uvicorn服务器
-    # host="0.0.0.0" 表示接受来自任何IP的连接
-    # port=8001 表示监听8001端口
+    # Start uvicorn server
+    # host="0.0.0.0" means accept connections from any IP
+    # port=8001 means listen on port 8001
     uvicorn.run(app, host="0.0.0.0", port=8001)

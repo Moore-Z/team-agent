@@ -5,7 +5,7 @@ import hashlib
 class EmbeddingManager:
     def __init__(self, model: str = "text-embedding-ada-002"):
         self.embeddings = OpenAIEmbeddings(model=model)
-        self._cache = {}  # 简单的内存缓存
+        self._cache = {}  # Simple memory cache
     
     def get_embedding(self, text: str, use_cache: bool = True) -> List[float]:
         if use_cache:
