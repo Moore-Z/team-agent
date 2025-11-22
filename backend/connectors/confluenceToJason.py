@@ -18,7 +18,7 @@ from typing import List, Dict
 CONFLUENCE_URL = os.getenv('CONFLUENCE_URL')
 USERNAME = os.getenv('CONFLUENCE_USERNAME')
 API_TOKEN = os.getenv('CONFLUENCE_API_TOKEN')
-PERSONAL_SPACE_KEY = os.getenv('CONFLUENCE_PERSONAL_SPACE_KEY')
+PERSONAL_SPACE_KEY = os.getenv('CONFLUENCE_Software_development_KEY')
 
 class FormConfluenceDataToPersist(ConfluenceConnector):
     def __init__(self, url: str = None, username: str = None, api_token: str = None):
@@ -58,7 +58,7 @@ class FormConfluenceDataToPersist(ConfluenceConnector):
         # Process each page
         processed_pages = []
         for page in pages:
-            processed_page = self.process_page_content(page)
+            processed_page = self.process_page_content(page,target_space)
             processed_pages.append(processed_page)
 
         # Save to JSON file
@@ -123,7 +123,8 @@ if __name__ == "__main__":
                 print(f"\n💾 Testing data save to JSON...")
                 try:
                     result = connector.process_and_save_pages_to_json(
-                        output_file="data/jason/test_confluence_data.json"
+                        space_key=connector.personal_space_key,
+                        output_file="data/jason/Software_dev_confluence_data.json"
                     )
                     print(f"✅ {result}")
                 except Exception as e:

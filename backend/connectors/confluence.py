@@ -40,7 +40,7 @@ class ConfluenceConnector:
         space = self.confluence.get_space(space_key, expand='description,homepage')
         return space
 
-    def process_page_content(self, page: Dict) -> Dict:
+    def process_page_content(self, page: Dict, space: str = None) -> Dict:
         """Process page content and extract plain text"""
         content = page.get('body', {}).get('storage', {}).get('value', '')
         # Clean HTML tags
@@ -52,7 +52,7 @@ class ConfluenceConnector:
             'metadata': {
                 'source': 'confluence',
                 'title': page['title'],
-                'space': page.get('space', {}).get('key'),
+                'space': space,
                 'url': f"{self.confluence.url}/wiki{page['_links']['webui']}",
                 'last_modified': page['version']['when'],
                 'author': page['version']['by']['displayName']
